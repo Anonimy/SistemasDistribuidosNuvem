@@ -24,10 +24,8 @@ namespace ProgramaCozinha
         {
             this.socket = new LibUDP.UDPSocket(ReceberPedido, 6001);
         }
-
         private void FormCozinha_FormClosed(object sender, FormClosedEventArgs e)
         {
-            base.OnFormClosed(e);
             if (socket != null)
             {
                 socket.Close();
@@ -38,11 +36,14 @@ namespace ProgramaCozinha
         private void ListaChegada_DoubleClick(object sender, EventArgs e)
         {
             Produto p = (Produto) ListaChegada.SelectedItem;
-            if (p.Id > 0 && ListaSaida.Items.Count < 255)
+            if (p != null)
             {
-                ListaSaida.Items.Add(p);
+                if (p.Id > 0 && ListaSaida.Items.Count < 255)
+                {
+                    ListaSaida.Items.Add(p);
+                }
+                ListaChegada.Items.Remove(p);
             }
-            ListaChegada.Items.Remove(p);
         }
 
         private void ListaSaida_DoubleClick(object sender, EventArgs e)
@@ -50,8 +51,11 @@ namespace ProgramaCozinha
             if (ListaChegada.Items.Count < 255)
             {
                 Produto p = (Produto) ListaSaida.SelectedItem;
-                ListaChegada.Items.Add(p);
-                ListaSaida.Items.Remove(p);
+                if (p != null)
+                {
+                    ListaChegada.Items.Add(p);
+                    ListaSaida.Items.Remove(p);
+                }
             }
         }
 
@@ -60,14 +64,17 @@ namespace ProgramaCozinha
             if (socket != null)
             {
                 byte counter = (byte) ListaSaida.Items.Count;
-                byte[] buffer = new byte[counter + 2];
-                buffer[1] = counter;
-                for (byte i = 0; i < counter; i++)
+                byte[] buffer = new byte[3];
+                while (counter > 0)
                 {
-                    buffer[i + 2] = ((Produto) ListaSaida.Items[i]).Id;
+                    Produto p = (Produto) ListaSaida.Items[0];
+                    buffer[0] = p.NumeroMesa;
+                    buffer[1] = 1;
+                    buffer[2] = p.Id;
+                    socket.Send(buffer, ip, 6002);
+                    ListaSaida.Items.Remove(p);
+                    counter = (byte) ListaSaida.Items.Count;
                 }
-                socket.Send(buffer, ip, 6002);
-                ListaSaida.Items.Clear();
             }
         }
 

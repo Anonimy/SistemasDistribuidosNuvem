@@ -26,7 +26,6 @@ namespace ProgramaBalcao
 
         private void FormBalcao_FormClosed(object sender, FormClosedEventArgs e)
         {
-            base.OnFormClosed(e);
             if (socket != null)
             {
                 socket.Close();

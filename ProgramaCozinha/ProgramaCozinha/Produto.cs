@@ -13,7 +13,7 @@ namespace ProgramaCozinha
         private string descricao;
 
         public byte Id { get => id; }
-        public byte NumeroMesa { set => numeroMesa = value; }
+        public byte NumeroMesa { get => numeroMesa; set => numeroMesa = value; }
         public string Descricao { get => descricao; }
 
         public Produto(byte id, string descricao)
